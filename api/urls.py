@@ -3,5 +3,6 @@ from . import views
 
 urlpatterns = [
     path('',views.apiOverView, name="api-overview"),
-    path('task-list/',views.taskList, name="task-list")
+    path('task-list/',views.taskList, name="task-list"),
+    path('task-details/<str:pk>/',views.taskListDetails, name="task-detail"),
 ]
