@@ -126,6 +126,8 @@
 
     var csrftoken = getCookie('csrftoken');
 
+    var activeItem = null
+
     buildList();
 
     function buildList() {
@@ -160,13 +162,26 @@
                 `
                     wrapper.innerHTML += item;
 
+
                 }
 
-                for (var i in list){
+                for (var i in list) {
+                    //button edit and passing data through function
                     var editBtn = document.getElementsByClassName('edit')[i]
-                    editBtn.addEventListener('click', function () {
-                        editItem(list[i])
-                    })
+                    var deleteBtn = document.getElementsByClassName('delete')[i]
+                    var title = document.getElementsByClassName('title')[i]
+
+                    editBtn.addEventListener('click', (function (item) {
+                        return function () {
+                            editItem(item)
+                        }
+                    })(list[i]))
+
+                    deleteBtn.addEventListener('click', (function (item) {
+                        return function () {
+                            deleteItem(item)
+                        }
+                    })(list[i]))
                 }
             })
 
@@ -177,6 +192,13 @@
         e.preventDefault()
         console.log('Form submitted')
         var url = 'http://127.0.0.1:8000/api/task-create'
+
+        //active item not null means item selected to update
+        if (activeItem != null) {
+            var url = `http://127.0.0.1:8000/api/task-update/${activeItem.id}/`
+            activeItem = null
+        }
+
         var title = document.getElementById('title').value
 
         fetch(url, {
@@ -197,6 +219,12 @@
 
     function editItem(item) {
         console.log('Edit item Clicked:', item)
+        activeItem = item
+        document.getElementById('title').value = activeItem.title
+    }
+
+    function deleteItem(item) {
+        console.log('Delete item:', item)
     }
 </script>
 </body>
