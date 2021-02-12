@@ -108,11 +108,31 @@
 			-- CSRF Token
 		*/
 
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    var csrftoken = getCookie('csrftoken');
+
     buildList();
 
     function buildList() {
         var wrapper = document.getElementById('list-wrapper');
 
+        //empty div
+        wrapper.innerText = ''
         var url = 'http://127.0.0.1:8000/api/task-list/'
 
         fetch(url)
@@ -139,9 +159,44 @@
                         </div>
                 `
                     wrapper.innerHTML += item;
+
+                }
+
+                for (var i in list){
+                    var editBtn = document.getElementsByClassName('edit')[i]
+                    editBtn.addEventListener('click', function () {
+                        editItem(list[i])
+                    })
                 }
             })
 
+    }
+
+    var form = document.getElementById('form-wrapper');
+    form.addEventListener('submit', function (e) {
+        e.preventDefault()
+        console.log('Form submitted')
+        var url = 'http://127.0.0.1:8000/api/task-create'
+        var title = document.getElementById('title').value
+
+        fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json',
+                    'X-CSRFToken': csrftoken,
+                },
+                body: JSON.stringify({'title': title})
+            }
+        ).then(function (response) {
+            buildList()
+            //form reset
+            document.getElementById('form').reset();
+        })
+
+    })
+
+    function editItem(item) {
+        console.log('Edit item Clicked:', item)
     }
 </script>
 </body>
