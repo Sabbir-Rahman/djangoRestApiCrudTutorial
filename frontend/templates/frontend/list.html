@@ -229,6 +229,16 @@
 
     function deleteItem(item) {
         console.log('Delete item:', item)
+        fetch(`http://127.0.0.1:8000/api/task-delete/${item.id}/`, {
+            method: 'DELETE',
+            headers: {
+                'Content-type' : 'application/json',
+                'X-CSRFToken' : csrftoken,
+            }
+        }).then((response) => {
+            //build list after delete
+            buildList()
+        })
     }
 </script>
 </body>
